@@ -42,10 +42,10 @@ class Our(Model):
             m = random.random()
             n = random.random()
             if (m > n):
-                m,n = n,m
-            if (y[i] == 2):   # dis positive
+                m, n = n, m
+            if (y[i] == 2):  # dis positive
                 ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0) - m - n
-            if (y[i] == -2):  #dis negative
+            if (y[i] == -2):  # dis negative
                 ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0) + m + n
             if (y[i] == 1):  # sub positive
                 ans[i] = 1 - torch.cosine_similarity(h[i], t[i], 0) + m - n

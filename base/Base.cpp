@@ -99,7 +99,7 @@ void* getBatch(void* con) {
 				batch_r[batch + last] = trainList[i].r;
 			}
 			batch_y[batch + last] = -1;
-			if(batch_r[batch + last] == 1)
+			if(batch_r[batch + last] == -1)
 				batch_y[batch + last] = -2;
 			last += batchSize;
 		}
