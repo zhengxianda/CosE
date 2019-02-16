@@ -22,12 +22,12 @@ class Our(Model):
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
         # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
-    def _calc(self, h, t, y):
+    def _calc(h, t, r):
         # return torch.norm(1-torch.cosine_similarity(h, t)+torch.norm(h)-torch.norm(t), self.config.p_norm, -1)
-        ans = y
+        ans = r
         # print(type(ans))
         # print(len(y))
-        for i in range(len(y)):
+        for i in range(len(r)):
             # a1 = np.random.random(100)
             # b1 = np.random.random(100)
             # while (np.linalg.norm(a1) > 1.0):
@@ -39,18 +39,12 @@ class Our(Model):
             # print(a)
             # print(b)
             # print("\n")
-            m = random.random()
-            n = random.random()
-            if (m > n):
-                m, n = n, m
-            if (y[i] == 2):  # dis positive
-                ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0) - m - n
-            if (y[i] == -2):  # dis negative
-                ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0) + m + n
-            if (y[i] == 1):  # sub positive
-                ans[i] = 1 - torch.cosine_similarity(h[i], t[i], 0) + m - n
-            if (y[i] == -1):  # sub negative
-                ans[i] = 1 - torch.cosine_similarity(h[i], t[i], 0) + n - m
+            # m = random.random()
+            # n = random.random()
+            if (r[i] == 0):  # sub
+                ans[i] = 1 - torch.cosine_similarity(h[i], t[i], 0)
+            if (r[i] == 1):  # dis
+                ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0)
         # return 1 - torch.cosine_similarity(h, t) + torch.norm(h) * torch.norm(h) - torch.norm(t) * torch.norm(t)
         # print(type(ans))
         return ans
@@ -62,10 +56,9 @@ class Our(Model):
     def forward(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        # r = self.rel_embeddings(self.batch_r)
-        y = self.batch_y
+        r = self.batch_r
         # print(type(y))
-        score = self._calc(h, t, y)
+        score = self._calc(h, t, r)
         p_score = self.get_positive_score(score)
         n_score = self.get_negative_score(score)
         return self.loss(p_score, n_score)
@@ -73,9 +66,8 @@ class Our(Model):
     def predict(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        # r = self.rel_embeddings(self.batch_r)
-        y = self.batch_y
-        score = self._calc(h, t, y)
+        r = self.batch_r
+        score = self._calc(h, t, r)
         # print(type(score))
         s = torch.from_numpy(score)
         return s.cpu().data.numpy()

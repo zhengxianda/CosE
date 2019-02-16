@@ -361,11 +361,10 @@ class Config(object):
         self.optimizer.step()
         return loss.item()
 
-    def test_one_step(self, model, test_h, test_t, test_r, test_y):
+    def test_one_step(self, model, test_h, test_t, test_r):
         model.batch_h = to_var(test_h)
         model.batch_t = to_var(test_t)
         model.batch_r = to_var(test_r)
-        model.batch_y = test_y
         return model.predict()
 
     def valid(self, model):
@@ -376,14 +375,14 @@ class Config(object):
             self.lib.getValidHeadBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r, self.batch_y)
+            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
 
             self.lib.validHead(res.__array_interface__["data"][0])
 
             self.lib.getValidTailBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r, self.batch_y)
+            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
             self.lib.validTail(res.__array_interface__["data"][0])
         return self.lib.getValidHit10()
 
@@ -446,13 +445,13 @@ class Config(object):
             sys.stdout.flush()
             self.lib.getHeadBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                self.testModel, self.test_h, self.test_t, self.test_r, self.batch_y
+                self.testModel, self.test_h, self.test_t, self.test_r
             )
             self.lib.testHead(res.__array_interface__["data"][0])
 
             self.lib.getTailBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                self.testModel, self.test_h, self.test_t, self.test_r, self.batch_y
+                self.testModel, self.test_h, self.test_t, self.test_r
             )
             self.lib.testTail(res.__array_interface__["data"][0])
         self.lib.test_link_prediction()

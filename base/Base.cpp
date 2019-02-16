@@ -83,8 +83,6 @@ void* getBatch(void* con) {
 		batch_t[batch] = trainList[i].t;
 		batch_r[batch] = trainList[i].r;
 		batch_y[batch] = 1;
-		if(batch_r[batch]==1)
-			batch_y[batch] = 2;
 		INT last = batchSize;
 		for (INT times = 0; times < negRate; times ++) {
 			if (bernFlag)
@@ -99,8 +97,6 @@ void* getBatch(void* con) {
 				batch_r[batch + last] = trainList[i].r;
 			}
 			batch_y[batch + last] = -1;
-			if(batch_r[batch + last] == -1)
-				batch_y[batch + last] = -2;
 			last += batchSize;
 		}
 		for (INT times = 0; times < negRelRate; times++) {
