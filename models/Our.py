@@ -22,11 +22,11 @@ class Our(Model):
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
         # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
-    def _calc(h, t, r):
+    def _calc(self, h, t, r, y):
         # return torch.norm(1-torch.cosine_similarity(h, t)+torch.norm(h)-torch.norm(t), self.config.p_norm, -1)
-        ans = r
+        ans = y
         # print(type(ans))
-        # print(len(y))
+        # print(len(r))
         for i in range(len(r)):
             # a1 = np.random.random(100)
             # b1 = np.random.random(100)
@@ -41,10 +41,14 @@ class Our(Model):
             # print("\n")
             # m = random.random()
             # n = random.random()
-            if (r[i] == 0):  # sub
-                ans[i] = 1 - torch.cosine_similarity(h[i], t[i], 0)
-            if (r[i] == 1):  # dis
-                ans[i] = 1 + torch.cosine_similarity(h[i], t[i], 0)
+            if r[i] == 0:  # sub
+                ans[i] = 1.0 - torch.cosine_similarity(h[i], t[i], 0)
+                # print(type([h[i]]))
+                # print(type(1.0 - torch.cosine_similarity(h[i], t[i], 0)))
+                # print("sub")
+            if r[i] == 1:  # dis
+                ans[i] = 1.0 + torch.cosine_similarity(h[i], t[i], 0)
+                # print("dis")
         # return 1 - torch.cosine_similarity(h, t) + torch.norm(h) * torch.norm(h) - torch.norm(t) * torch.norm(t)
         # print(type(ans))
         return ans
@@ -57,8 +61,9 @@ class Our(Model):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
         r = self.batch_r
-        # print(type(y))
-        score = self._calc(h, t, r)
+        y = self.batch_y
+        score = self._calc(h, t, r, y)
+        # print(type(score[0]))
         p_score = self.get_positive_score(score)
         n_score = self.get_negative_score(score)
         return self.loss(p_score, n_score)
@@ -67,7 +72,8 @@ class Our(Model):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
         r = self.batch_r
-        score = self._calc(h, t, r)
+        y = self.batch_y
+        score = self._calc(h, t, r, y)
         # print(type(score))
         s = torch.from_numpy(score)
         return s.cpu().data.numpy()

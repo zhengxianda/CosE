@@ -375,14 +375,18 @@ class Config(object):
             self.lib.getValidHeadBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
+            res = self.test_one_step(
+                model, self.valid_h, self.valid_t, self.valid_r
+            )
 
             self.lib.validHead(res.__array_interface__["data"][0])
 
             self.lib.getValidTailBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
+            res = self.test_one_step(
+                model, self.valid_h, self.valid_t, self.valid_r
+            )
             self.lib.validTail(res.__array_interface__["data"][0])
         return self.lib.getValidHit10()
 
