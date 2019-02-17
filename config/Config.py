@@ -149,16 +149,21 @@ class Config(object):
         self.valid_h = np.zeros(self.entTotal, dtype=np.int64)
         self.valid_t = np.zeros(self.entTotal, dtype=np.int64)
         self.valid_r = np.zeros(self.entTotal, dtype=np.int64)
+        self.valid_y = np.zeros(self.entTotal, dtype=np.float32)
         self.valid_h_addr = self.valid_h.__array_interface__["data"][0]
         self.valid_t_addr = self.valid_t.__array_interface__["data"][0]
         self.valid_r_addr = self.valid_r.__array_interface__["data"][0]
+        self.valid_y_addr = self.valid_y.__array_interface__["data"][0]
+
 
         self.test_h = np.zeros(self.entTotal, dtype=np.int64)
         self.test_t = np.zeros(self.entTotal, dtype=np.int64)
         self.test_r = np.zeros(self.entTotal, dtype=np.int64)
+        self.test_y = np.zeros(self.entTotal, dtype=np.float32)
         self.test_h_addr = self.test_h.__array_interface__["data"][0]
         self.test_t_addr = self.test_t.__array_interface__["data"][0]
         self.test_r_addr = self.test_r.__array_interface__["data"][0]
+        self.test_y_addr = self.test_r.__array_interface__["data"][0]
 
         self.valid_pos_h = np.zeros(self.validTotal, dtype=np.int64)
         self.valid_pos_t = np.zeros(self.validTotal, dtype=np.int64)
@@ -187,6 +192,9 @@ class Config(object):
         self.test_neg_r_addr = self.test_neg_r.__array_interface__["data"][0]
         self.relThresh = np.zeros(self.relTotal, dtype=np.float32)
         self.relThresh_addr = self.relThresh.__array_interface__["data"][0]
+
+    def get_batch_seq_size(self):
+        return self.batch_seq_size
 
     def set_test_link(self, test_link):
         self.test_link = test_link
@@ -361,10 +369,11 @@ class Config(object):
         self.optimizer.step()
         return loss.item()
 
-    def test_one_step(self, model, test_h, test_t, test_r):
+    def test_one_step(self, model, test_h, test_t, test_r, test_y):
         model.batch_h = to_var(test_h)
         model.batch_t = to_var(test_t)
         model.batch_r = to_var(test_r)
+        model.batch_y = test_y
         return model.predict()
 
     def valid(self, model):
@@ -376,7 +385,7 @@ class Config(object):
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
             res = self.test_one_step(
-                model, self.valid_h, self.valid_t, self.valid_r
+                model, self.valid_h, self.valid_t, self.valid_r, self.batch_y
             )
 
             self.lib.validHead(res.__array_interface__["data"][0])
@@ -385,7 +394,7 @@ class Config(object):
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
             res = self.test_one_step(
-                model, self.valid_h, self.valid_t, self.valid_r
+                model, self.valid_h, self.valid_t, self.valid_r, self.batch_y
             )
             self.lib.validTail(res.__array_interface__["data"][0])
         return self.lib.getValidHit10()
@@ -449,13 +458,13 @@ class Config(object):
             sys.stdout.flush()
             self.lib.getHeadBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                self.testModel, self.test_h, self.test_t, self.test_r
+                self.testModel, self.test_h, self.test_t, self.test_r, self.batch_y
             )
             self.lib.testHead(res.__array_interface__["data"][0])
 
             self.lib.getTailBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                self.testModel, self.test_h, self.test_t, self.test_r
+                self.testModel, self.test_h, self.test_t, self.test_r, self.batch_y
             )
             self.lib.testTail(res.__array_interface__["data"][0])
         self.lib.test_link_prediction()

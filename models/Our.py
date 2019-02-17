@@ -24,23 +24,12 @@ class Our(Model):
 
     def _calc(self, h, t, r, y):
         # return torch.norm(1-torch.cosine_similarity(h, t)+torch.norm(h)-torch.norm(t), self.config.p_norm, -1)
-        ans = y
-        # print(type(ans))
+        # print("r size")
         # print(len(r))
-        for i in range(len(r)):
-            # a1 = np.random.random(100)
-            # b1 = np.random.random(100)
-            # while (np.linalg.norm(a1) > 1.0):
-            #     a1 /= 2
-            # while (np.linalg.norm(b1) > 1.0):
-            #     b1 /= 2
-            # m = np.linalg.norm(a1)
-            # n = np.linalg.norm(b1)
-            # print(a)
-            # print(b)
-            # print("\n")
-            # m = random.random()
-            # n = random.random()
+        ans = y
+        # print("ans size: " + str(ans.size))
+        # print("ans type: " + str(type(ans)))
+        for i in range(len(y)):
             if r[i] == 0:  # sub
                 ans[i] = 1.0 - torch.cosine_similarity(h[i], t[i], 0)
                 # print(type([h[i]]))
@@ -76,4 +65,7 @@ class Our(Model):
         score = self._calc(h, t, r, y)
         # print(type(score))
         s = torch.from_numpy(score)
+        # print(score.size())
         return s.cpu().data.numpy()
+        # return score.cpu().data.numpy()
+        # return score
