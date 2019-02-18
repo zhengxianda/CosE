@@ -6,8 +6,6 @@ import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
 from .Model import Model
-import sys
-import random
 
 
 class Our(Model):
@@ -22,23 +20,8 @@ class Our(Model):
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
         # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
-    def _calc(self, h, t, r, y):
-        # print("call!!")
-        # print(r.cpu().data.numpy().astype(np.float))
-        # print(torch.cosine_similarity(h, t))
-        # print(1.0 + torch.cosine_similarity(h, t))
-        # print(1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t))
-        # print(torch.norm(1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t), self.config.p_norm, -1).size())
+    def _calc(self, h, t, r):
         return 1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t)
-        # print("call!!")
-        # return torch.norm(1.0 + (float(r.cpu().data.numpy().item()) - 0.5) * 2 * torch.cosine_similarity(h, t),
-        #
-        #                   self.config.p_norm, -1)
-        # ans = y
-        # print(len(r))
-        # for i in range(len(r)):
-        #     ans[i] = 1.0 + (float(r[i].cpu().data.numpy().item()) - 0.5) * 2 * torch.cosine_similarity(h[i], t[i], 0)
-        # return ans
 
     def loss(self, p_score, n_score):
         y = Variable(torch.Tensor([-1]).cuda())
@@ -48,8 +31,7 @@ class Our(Model):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
         r = self.batch_r
-        y = self.batch_y
-        score = self._calc(h, t, r, y)
+        score = self._calc(h, t, r)
         p_score = self.get_positive_score(score)
         n_score = self.get_negative_score(score)
         return self.loss(p_score, n_score)
@@ -58,6 +40,5 @@ class Our(Model):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
         r = self.batch_r
-        y = self.batch_y
-        score = self._calc(h, t, r, y)
+        score = self._calc(h, t, r)
         return score.cpu().data.numpy()

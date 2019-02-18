@@ -1,14 +1,21 @@
 # test
 需要高博过目的代码：./models/Our.py
 
-其中主要下面三个函数：
+其中主要是"def _calc"函数：
 
-def _calc(self, h, t, y)，其中y是负采样中标记，sub、dis正例=1，sub、dis负例=-1
+#def _calc
+def _calc(self, h, t, r)，sub三元组的r是0，dis三元组的r是1
 
-def forward(self)
+r.to(torch.float32) 是{sub=0.0,dis=1.0}
 
-def predict(self)
+(r.to(torch.float32)-0.5)*2 是{sub=-1.0,dis=1.0}
 
+1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t)
+对应的是
+
+sub：1-cos(h,r)
+
+dis：1+cos(h,r)
 
 
 
