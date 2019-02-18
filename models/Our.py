@@ -23,13 +23,22 @@ class Our(Model):
         # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
     def _calc(self, h, t, r, y):
-        ans = y
-        for i in range(len(r)):
-            if r[i] == 0:  # sub
-                ans[i] = 1.0 - torch.cosine_similarity(h[i], t[i], 0)
-            if r[i] == 1:  # dis
-                ans[i] = 1.0 + torch.cosine_similarity(h[i], t[i], 0)
-        return ans
+        # print("call!!")
+        # print(r.cpu().data.numpy().astype(np.float))
+        # print(torch.cosine_similarity(h, t))
+        # print(1.0 + torch.cosine_similarity(h, t))
+        # print(1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t))
+        # print(torch.norm(1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t), self.config.p_norm, -1).size())
+        return 1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t)
+        # print("call!!")
+        # return torch.norm(1.0 + (float(r.cpu().data.numpy().item()) - 0.5) * 2 * torch.cosine_similarity(h, t),
+        #
+        #                   self.config.p_norm, -1)
+        # ans = y
+        # print(len(r))
+        # for i in range(len(r)):
+        #     ans[i] = 1.0 + (float(r[i].cpu().data.numpy().item()) - 0.5) * 2 * torch.cosine_similarity(h[i], t[i], 0)
+        # return ans
 
     def loss(self, p_score, n_score):
         y = Variable(torch.Tensor([-1]).cuda())
