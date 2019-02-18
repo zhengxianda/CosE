@@ -51,9 +51,4 @@ class Our(Model):
         r = self.batch_r
         y = self.batch_y
         score = self._calc(h, t, r, y)
-        # print(type(score))
-        s = torch.from_numpy(score)
-        # print(score.size())
-        # return score.cpu().data.numpy()
-        return s.cpu().data.numpy()
-        # return score
+        return score.cpu().data.numpy()

@@ -370,7 +370,7 @@ class Config(object):
         model.batch_h = to_var(test_h)
         model.batch_t = to_var(test_t)
         model.batch_r = to_var(test_r)
-        model.batch_y = test_y
+        model.batch_y = to_var(test_y)
         return model.predict()
 
     def valid(self, model):
