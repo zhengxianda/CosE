@@ -23,32 +23,12 @@ class Our(Model):
         # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
     def _calc(self, h, t, r, y):
-        # return torch.norm(1-torch.cosine_similarity(h, t)+torch.norm(h)-torch.norm(t), self.config.p_norm, -1)
-        # print("r size")
-        # print(len(r))
-        # print(r.size)
-        # print(len(y))
-        # ans = ans.cpu().data.numpy()
-        # print(ans.dtype)
-        # ans = ans.astype(np.float)
-        # print(ans.dtype)
-        # ans = torch.from_numpy(ans)
         ans = y
-        # print(y.dtype)
-        # ans = ans.reshape((len(r),))
-        # print("ans size: " + str(ans.size))
-        # print("ans type: " + str(type(ans)))
         for i in range(len(r)):
             if r[i] == 0:  # sub
                 ans[i] = 1.0 - torch.cosine_similarity(h[i], t[i], 0)
-                # print(type([h[i]]))
-                # print(type(1.0 - torch.cosine_similarity(h[i], t[i], 0)))
-                # print("sub")
             if r[i] == 1:  # dis
                 ans[i] = 1.0 + torch.cosine_similarity(h[i], t[i], 0)
-                # print("dis")
-        # return 1 - torch.cosine_similarity(h, t) + torch.norm(h) * torch.norm(h) - torch.norm(t) * torch.norm(t)
-        # print(type(ans))
         return ans
 
     def loss(self, p_score, n_score):
@@ -72,8 +52,8 @@ class Our(Model):
         y = self.batch_y
         score = self._calc(h, t, r, y)
         # print(type(score))
-        # s = torch.from_numpy(score)
+        s = torch.from_numpy(score)
         # print(score.size())
-        return score.cpu().data.numpy()
-        # return s.cpu().data.numpy()
+        # return score.cpu().data.numpy()
+        return s.cpu().data.numpy()
         # return score
