@@ -26,10 +26,19 @@ class Our(Model):
         # return torch.norm(1-torch.cosine_similarity(h, t)+torch.norm(h)-torch.norm(t), self.config.p_norm, -1)
         # print("r size")
         # print(len(r))
+        # print(r.size)
+        # print(len(y))
+        # ans = ans.cpu().data.numpy()
+        # print(ans.dtype)
+        # ans = ans.astype(np.float)
+        # print(ans.dtype)
+        # ans = torch.from_numpy(ans)
         ans = y
+        # print(y.dtype)
+        # ans = ans.reshape((len(r),))
         # print("ans size: " + str(ans.size))
         # print("ans type: " + str(type(ans)))
-        for i in range(len(y)):
+        for i in range(len(r)):
             if r[i] == 0:  # sub
                 ans[i] = 1.0 - torch.cosine_similarity(h[i], t[i], 0)
                 # print(type([h[i]]))
@@ -52,7 +61,6 @@ class Our(Model):
         r = self.batch_r
         y = self.batch_y
         score = self._calc(h, t, r, y)
-        # print(type(score[0]))
         p_score = self.get_positive_score(score)
         n_score = self.get_negative_score(score)
         return self.loss(p_score, n_score)
@@ -64,8 +72,8 @@ class Our(Model):
         y = self.batch_y
         score = self._calc(h, t, r, y)
         # print(type(score))
-        s = torch.from_numpy(score)
+        # s = torch.from_numpy(score)
         # print(score.size())
-        return s.cpu().data.numpy()
-        # return score.cpu().data.numpy()
+        return score.cpu().data.numpy()
+        # return s.cpu().data.numpy()
         # return score
