@@ -13,10 +13,10 @@ r.to(torch.float32) 是{sub=0.0,dis=1.0}
 1.0 + (r.to(torch.float32)-0.5) * 2 * torch.cosine_similarity(h, t)
 对应的是
 
-sub：1-cos(h,r)+||m||-||n||
+sub：1-cos(h,r)
 
-dis：1+cos(h,r)+||m||-||n||
+dis：1+cos(h,r)
 
-
+其中h,t是TransD中经过投影矩阵相乘之后的h,t
 
 
