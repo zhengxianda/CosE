@@ -8,9 +8,9 @@ import numpy as np
 from .Model import Model
 
 
-class Our(Model):
+class Sub(Model):
     def __init__(self, config):
-        super(Our, self).__init__(config)
+        super(Sub, self).__init__(config)
         self.ent_embeddings = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         # self.rel_embeddings = nn.Embedding(self.config.relTotal, self.config.hidden_size)
         self.ent_transfer = nn.Embedding(self.config.entTotal, self.config.hidden_size)
