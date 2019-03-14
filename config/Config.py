@@ -466,6 +466,7 @@ class Config(object):
                 # self.testModel, self.test_h, self.test_t, self.test_r, self.test_m, self.test_n
                 self.testModel, self.test_h, self.test_t, self.test_r
             )
+
             self.lib.testTail(res.__array_interface__["data"][0])
         self.lib.test_link_prediction()
 
