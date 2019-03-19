@@ -12,7 +12,6 @@ class Our(Model):
     def __init__(self, config):
         super(Our, self).__init__(config)
         self.ent_embeddings = nn.Embedding(self.config.entTotal, self.config.hidden_size)
-        # self.rel_embeddings = nn.Embedding(self.config.relTotal, self.config.hidden_size)
         self.sub_transfer = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         self.dis_transfer = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         self.criterion = nn.MarginRankingLoss(self.config.margin, False)
@@ -20,7 +19,6 @@ class Our(Model):
 
     def init_weights(self):
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
-        # nn.init.xavier_uniform(self.rel_embeddings.weight.data)
         nn.init.xavier_uniform(self.sub_transfer.weight.data)
         nn.init.xavier_uniform(self.dis_transfer.weight.data)
 
@@ -98,8 +96,4 @@ class Our(Model):
         h_dis = self._transfer(h, h_dis_transfer, t_dis_transfer)
         t_dis = self._transfer(t, t_dis_transfer, h_dis_transfer)
         score = self._calc(h_sub, t_sub, h_dis, t_dis)
-        # print(score.cpu().data.numpy())
-        # s = np.sort(score.cpu().data.numpy())
-        # print(s)
-        # s = score.cpu().data.numpy()
         return score.cpu().data.numpy()

@@ -10,7 +10,7 @@ import datetime
 import ctypes
 import json
 import numpy as np
-
+import copy
 
 def to_var(x):
     return Variable(torch.from_numpy(x).cuda())
@@ -135,7 +135,7 @@ class Config(object):
 
         self.batch_size = int(self.trainTotal / self.nbatches)
         self.batch_seq_size = self.batch_size * (
-                1 + self.negative_ent + self.negative_rel
+            1 + self.negative_ent + self.negative_rel
         )
         self.batch_h = np.zeros(self.batch_seq_size, dtype=np.int64)
         self.batch_t = np.zeros(self.batch_seq_size, dtype=np.int64)
@@ -152,7 +152,6 @@ class Config(object):
         self.valid_h_addr = self.valid_h.__array_interface__["data"][0]
         self.valid_t_addr = self.valid_t.__array_interface__["data"][0]
         self.valid_r_addr = self.valid_r.__array_interface__["data"][0]
-
 
         self.test_h = np.zeros(self.entTotal, dtype=np.int64)
         self.test_t = np.zeros(self.entTotal, dtype=np.int64)
@@ -355,21 +354,17 @@ class Config(object):
         self.trainModel.batch_h = to_var(self.batch_h)
         self.trainModel.batch_t = to_var(self.batch_t)
         self.trainModel.batch_r = to_var(self.batch_r)
-        # self.trainModel.batch_m = to_var(self.batch_m)
-        # self.trainModel.batch_n = to_var(self.batch_n)
+        self.trainModel.batch_y = to_var(self.batch_y)
         self.optimizer.zero_grad()
         loss = self.trainModel()
         loss.backward()
         self.optimizer.step()
         return loss.item()
 
-    # def test_one_step(self, model, test_h, test_t, test_r, test_m, test_n):
     def test_one_step(self, model, test_h, test_t, test_r):
         model.batch_h = to_var(test_h)
         model.batch_t = to_var(test_t)
         model.batch_r = to_var(test_r)
-        # model.batch_m = to_var(test_m)
-        # model.batch_n = to_var(test_n)
         return model.predict()
 
     def valid(self, model):
@@ -380,20 +375,14 @@ class Config(object):
             self.lib.getValidHeadBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(
-                # model, self.valid_h, self.valid_t, self.valid_r, self.valid_m, self.valid_n
-                model, self.valid_h, self.valid_t, self.valid_r
-            )
+            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
 
             self.lib.validHead(res.__array_interface__["data"][0])
 
             self.lib.getValidTailBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(
-                model, self.valid_h, self.valid_t, self.valid_r
-                # model, self.valid_h, self.valid_t, self.valid_r, self.valid_m, self.valid_n
-            )
+            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
             self.lib.validTail(res.__array_interface__["data"][0])
         return self.lib.getValidHit10()
 
@@ -420,7 +409,7 @@ class Config(object):
                 if hit10 > best_hit10:
                     best_hit10 = hit10
                     best_epoch = epoch
-                    best_model = self.trainModel.state_dict()
+                    best_model = copy.deepcopy(self.trainModel.state_dict())
                     print("Best model | hit@10 of valid set is %f" % (best_hit10))
                     bad_counts = 0
                 else:
@@ -456,17 +445,14 @@ class Config(object):
             sys.stdout.flush()
             self.lib.getHeadBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                # self.testModel, self.test_h, self.test_t, self.test_r, self.test_m, self.test_n
                 self.testModel, self.test_h, self.test_t, self.test_r
             )
             self.lib.testHead(res.__array_interface__["data"][0])
 
             self.lib.getTailBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
-                # self.testModel, self.test_h, self.test_t, self.test_r, self.test_m, self.test_n
                 self.testModel, self.test_h, self.test_t, self.test_r
             )
-
             self.lib.testTail(res.__array_interface__["data"][0])
         self.lib.test_link_prediction()
 

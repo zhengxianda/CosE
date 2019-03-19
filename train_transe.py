@@ -2,9 +2,9 @@ import config
 from  models import *
 import json
 import os 
-os.environ['CUDA_VISIBLE_DEVICES']='1'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 con = config.Config()
-con.set_in_path("./benchmarks/FB15K/")
+con.set_in_path("./benchmarks/Dis50-YAGO39K/")
 con.set_work_threads(8)
 con.set_train_times(1000)
 con.set_nbatches(100)	
