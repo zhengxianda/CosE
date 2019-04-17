@@ -7,6 +7,5 @@ from .DistMult import DistMult
 from .ComplEx import ComplEx
 from .RESCAL import RESCAL
 from .Analogy import Analogy
-from .Our import Our
 from .Sub import Sub
 from .Dis import Dis

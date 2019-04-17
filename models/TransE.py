@@ -21,7 +21,7 @@ class TransE(Model):
         nn.init.xavier_uniform(self.rel_embeddings.weight.data)
 
     def _calc(self, h, t, r):
-        return torch.norm(h + r - t, self.config.p_norm, -1)
+        return torch.norm(h + r- t, self.config.p_norm, -1)
 
     def loss(self, p_score, n_score):
         y = Variable(torch.Tensor([-1]).cuda())

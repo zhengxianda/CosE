@@ -29,8 +29,11 @@ class TransR(Model):
 				break
 		identity = identity.view(self.config.ent_size * self.config.rel_size)
 		for i in range(self.config.relTotal):
-			self.transfer_matrix.weight.data[i] = identity	
-	
+			self.transfer_matrix.weight.data[i] = identity
+		# nn.init.xavier_uniform(self.ent_embeddings.weight.data)
+		# nn.init.xavier_uniform(self.rel_embeddings.weight.data)
+		# nn.init.xavier_uniform(self.transfer_matrix.weight.data)
+
 	def _calc(self, h, t, r):
 		return torch.norm(h + r - t, self.config.p_norm, -1)
 	

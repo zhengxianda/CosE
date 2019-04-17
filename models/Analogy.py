@@ -10,10 +10,10 @@ from .Model import Model
 class Analogy(Model):
 	def __init__(self, config):
 		super(Analogy, self).__init__(config)
-		self.ent_re_embeddings=nn.Embedding(self.config.entTotal,self.config.hidden_size/2)
-		self.ent_im_embeddings=nn.Embedding(self.config.entTotal,self.config.hidden_size/2)
-		self.rel_re_embeddings=nn.Embedding(self.config.relTotal,self.config.hidden_size/2)
-		self.rel_im_embeddings=nn.Embedding(self.config.relTotal,self.config.hidden_size/2)
+		self.ent_re_embeddings=nn.Embedding(self.config.entTotal,int(self.config.hidden_size/2))
+		self.ent_im_embeddings=nn.Embedding(self.config.entTotal,int(self.config.hidden_size/2))
+		self.rel_re_embeddings=nn.Embedding(self.config.relTotal,int(self.config.hidden_size/2))
+		self.rel_im_embeddings=nn.Embedding(self.config.relTotal,int(self.config.hidden_size/2))
 		self.ent_embeddings = nn.Embedding(self.config.entTotal, self.config.hidden_size)
 		self.rel_embeddings = nn.Embedding(self.config.relTotal, self.config.hidden_size)
 		self.criterion = nn.Softplus()

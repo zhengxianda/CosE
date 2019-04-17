@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 import numpy as np
 from .Model import Model
-
+import json
 
 class Sub(Model):
     def __init__(self, config):
@@ -16,15 +16,20 @@ class Sub(Model):
         self.ent_transfer = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         self.mn_embeddings = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         self.ht_embeddings = nn.Embedding(self.config.entTotal, self.config.hidden_size)
+        self.ht_transfer = nn.Embedding(self.config.entTotal, self.config.hidden_size)
         self.criterion = nn.MarginRankingLoss(self.config.margin, False)
         self.init_weights()
 
     def init_weights(self):
+        # if self.config.pretrain_model == None:
+        #     raise Exception("[ERROR] Pretrain model doesn't exist!")
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
         nn.init.xavier_uniform(self.rel_embeddings.weight.data)
         nn.init.xavier_uniform(self.ent_transfer.weight.data)
         nn.init.xavier_uniform(self.mn_embeddings.weight.data)
         nn.init.xavier_uniform(self.ht_embeddings.weight.data)
+        # self.ht_embeddings.weight.data = self.config.pretrain_model['ent_embeddings.weight']
+        nn.init.xavier_uniform(self.ht_transfer.weight.data)
 
     def _transfer(self, e, e_transfer, e2_transfer):
         e = e + torch.sum(e * e_transfer, -1, True) * e2_transfer
@@ -41,15 +46,19 @@ class Sub(Model):
     def forward(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        r = self.rel_embeddings(self.batch_r)
-        h_transfer = self.ent_transfer(self.batch_h)
-        t_transfer = self.ent_transfer(self.batch_t)
-        h = self._transfer(h, h_transfer, t_transfer)
-        t = self._transfer(t, t_transfer, h_transfer)
+        # h_transfer = self.ent_transfer(self.batch_h)
+        # t_transfer = self.ent_transfer(self.batch_t)
+        # h = self._transfer(h, h_transfer, t_transfer)
+        # t = self._transfer(t, t_transfer, h_transfer)
         m = self.mn_embeddings(self.batch_h)
         n = self.mn_embeddings(self.batch_t)
         h1 = self.ht_embeddings(self.batch_h)
         t1 = self.ht_embeddings(self.batch_t)
+        h1_transfer = self.ht_transfer(self.batch_h)
+        t1_transfer = self.ht_transfer(self.batch_t)
+        h1 = self._transfer(h1, h1_transfer, t1_transfer)
+        t1 = self._transfer(t1, t1_transfer, h1_transfer)
+        r = self.rel_embeddings(self.batch_r)
         score = self._calc(h, t, r, m, n, h1, t1)
         p_score = self.get_positive_score(score)
         n_score = self.get_negative_score(score)
@@ -58,14 +67,18 @@ class Sub(Model):
     def predict(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        r = self.rel_embeddings(self.batch_r)
-        h_transfer = self.ent_transfer(self.batch_h)
-        t_transfer = self.ent_transfer(self.batch_t)
-        h = self._transfer(h, h_transfer, t_transfer)
-        t = self._transfer(t, t_transfer, h_transfer)
+        # h_transfer = self.ent_transfer(self.batch_h)
+        # t_transfer = self.ent_transfer(self.batch_t)
+        # h = self._transfer(h, h_transfer, t_transfer)
+        # t = self._transfer(t, t_transfer, h_transfer)
         m = self.mn_embeddings(self.batch_h)
         n = self.mn_embeddings(self.batch_t)
         h1 = self.ht_embeddings(self.batch_h)
         t1 = self.ht_embeddings(self.batch_t)
+        h1_transfer = self.ht_transfer(self.batch_h)
+        t1_transfer = self.ht_transfer(self.batch_t)
+        h1 = self._transfer(h1, h1_transfer, t1_transfer)
+        t1 = self._transfer(t1, t1_transfer, h1_transfer)
+        r = self.rel_embeddings(self.batch_r)
         score = self._calc(h, t, r, m, n, h1, t1)
         return score.cpu().data.numpy()
