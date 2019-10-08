@@ -4,9 +4,9 @@ import json
 import os 
 os.environ['CUDA_VISIBLE_DEVICES']='1'
 con = config.Config()
-con.set_in_path("./benchmarks/Dis100-YAGO39K/")
+con.set_in_path("./benchmarks/Sym-YAGO39K/")
 con.set_work_threads(8)
-con.set_train_times(500)
+con.set_train_times(400)
 con.set_nbatches(100)	
 con.set_alpha(0.001)
 con.set_bern(0)
@@ -28,7 +28,7 @@ transe_state_dict = con.train()
 
 
 conR = config.Config()
-conR.set_in_path("./benchmarks/Dis100-YAGO39K/")
+conR.set_in_path("./benchmarks/Sym-YAGO39K/")
 conR.set_work_threads(8)
 conR.set_train_times(1000)
 conR.set_nbatches(100)	

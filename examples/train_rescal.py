@@ -4,7 +4,7 @@ import json
 import os 
 os.environ['CUDA_VISIBLE_DEVICES']='1'
 con = config.Config()
-con.set_in_path("./benchmarks/Dis100-YAGO39K/")
+con.set_in_path("./benchmarks/Sym-YAGO39K/")
 con.set_work_threads(8)
 con.set_train_times(1000)
 con.set_nbatches(100)	
