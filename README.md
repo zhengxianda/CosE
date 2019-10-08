@@ -3,7 +3,7 @@ Source code and datasets for OM2019 paper "Multi-view Embedding for Biomedical O
 
 The structure of the model is shown in the figure, as follow:
 
-![aaaa](https://github.com/zhengxianda/CosE/master/img/framework.png)
+![picture](https://github.com/zhengxianda/raw/CosE/master/img/framework.png)
 
 
 # **Code**
@@ -70,4 +70,4 @@ You have to run "n-n.py" to finish data preprocessing
 
 If you use this model or code, please cite it as follows: 
 
-Huan Gao, Xianda Zheng, Weizhuo Li, Guilin Qi, and Meng Wang.Cosine-based Embedding for Completing Schematic Knowledge.NlPCC 2019
+Huan Gao, Xianda Zheng, Weizhuo Li, Guilin Qi, and Meng Wang.Cosine-based Embedding for Completing Schematic Knowledge.NlPCC 2019[[pdf]](https://github.com/zhengxianda/raw/CosE/master/img/paper.pdf)
