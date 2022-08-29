@@ -1,5 +1,5 @@
 # **Cos Embedding**
-Source code and datasets of paper "Cosine-based Embedding for Completing LightWeight Schematic Knowledge" for submitting **applied sciences**，which is a substantial extension of the preliminary results published in Proceedings of the 9th International Conference on Natural Language Processing and Chinese Computing (NLPCC 2019)
+Source code and datasets of paper "Cosine-based Embedding for Completing LightWeight Schematic Knowledge" for submitting *applied sciences*, which is a substantial extension of the preliminary results published in Proceedings of the 9th International Conference on Natural Language Processing and Chinese Computing (NLPCC 2019)
 
 The structure of the model is shown in the figure, as follow:
 
