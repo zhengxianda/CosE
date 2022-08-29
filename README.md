@@ -1,5 +1,5 @@
 # **Cos Embedding**
-Source code and datasets for NLPCC paper "Cosine-based Embedding for Completing Schematic Knowledge"
+Source code and datasets of paper "Cosine-based Embedding for Completing LightWeight Schematic Knowledge" for submitting **applied sciences**，which is a substantial extension of the preliminary results published in Proceedings of the 9th International Conference on Natural Language Processing and Chinese Computing (NLPCC 2019)
 
 The structure of the model is shown in the figure, as follow:
 
@@ -66,8 +66,8 @@ Datasets are required in the folder benchmarks/ in the following format, contain
 
 You have to run "n-n.py" to finish data preprocessing
 
-# **Citation**
+<!-- # **Citation**
 
 If you use this model or code, please cite it as follows: 
 
-Huan Gao, Xianda Zheng, Weizhuo Li, Guilin Qi, and Meng Wang.Cosine-based Embedding for Completing Schematic Knowledge.NlPCC 2019.[[pdf]](https://github.com/zhengxianda/CosE/raw/master/img/paper.pdf)
+Huan Gao, Xianda Zheng, Weizhuo Li, Guilin Qi, and Meng Wang.Cosine-based Embedding for Completing Schematic Knowledge.NlPCC 2019.[[pdf]](https://github.com/zhengxianda/CosE/raw/master/img/paper.pdf) -->
