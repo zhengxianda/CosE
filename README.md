@@ -26,12 +26,12 @@ bash make.sh
 python3 train_dis.py
 ```
 
-##Dependencies
+## Dependencies
 * Python 3  
 * Pytorch  
 * Numpy
 
-##Training Parameters
+## Training Parameters
 
 * The training parameters are in the following scripts.
  
