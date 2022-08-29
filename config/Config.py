@@ -12,8 +12,15 @@ import json
 import numpy as np
 import copy
 
-def to_var(x):
-    return Variable(torch.from_numpy(x).cuda())
+from .neg_sample import samples
+from .neg_sample import load_samples
+
+
+def to_var(x, use_gpu):
+    if use_gpu:
+        return Variable(torch.from_numpy(x).cuda())
+    else:
+        return Variable(torch.from_numpy(x))
 
 
 class Config(object):
@@ -106,7 +113,7 @@ class Config(object):
         self.lr_decay = 0
         self.weight_decay = 0
         self.lmbda = 0.0
-        self.alpah = 0.001
+        self.alpha = 0.001
         self.early_stopping_patience = 10
         self.nbatches = 100
         self.p_norm = 1
@@ -116,10 +123,12 @@ class Config(object):
         self.trainModel = None
         self.testModel = None
         self.pretrain_model = None
+        self.use_gpu = True
 
     def init(self):
         self.lib.setInPath(
-            ctypes.create_string_buffer(self.in_path.encode(), len(self.in_path) * 2)
+            ctypes.create_string_buffer(
+                self.in_path.encode(), len(self.in_path) * 2)
         )
         self.lib.setBern(self.bern)
         self.lib.setWorkThreads(self.work_threads)
@@ -187,6 +196,9 @@ class Config(object):
         self.test_neg_r_addr = self.test_neg_r.__array_interface__["data"][0]
         self.relThresh = np.zeros(self.relTotal, dtype=np.float32)
         self.relThresh_addr = self.relThresh.__array_interface__["data"][0]
+
+    def set_use_gpu(self, use_gpu):
+        self.use_gpu = use_gpu
 
     def set_test_link(self, test_link):
         self.test_link = test_link
@@ -288,7 +300,8 @@ class Config(object):
         print("Initializing training model...")
         self.model = model
         self.trainModel = self.model(config=self)
-        self.trainModel.cuda()
+        if self.use_gpu:
+            self.trainModel.cuda()
         if self.optimizer != None:
             pass
         elif self.opt_method == "Adagrad" or self.opt_method == "adagrad":
@@ -325,7 +338,8 @@ class Config(object):
         if path == None:
             path = os.path.join(self.result_dir, self.model.__name__ + ".ckpt")
         self.testModel.load_state_dict(torch.load(path))
-        self.testModel.cuda()
+        if self.use_gpu:
+            self.testModel.cuda()
         self.testModel.eval()
         print("Finish initializing")
 
@@ -342,7 +356,8 @@ class Config(object):
 
     def save_checkpoint(self, model, epoch):
         path = os.path.join(
-            self.checkpoint_dir, self.model.__name__ + "-" + str(epoch) + ".ckpt"
+            self.checkpoint_dir, self.model.__name__ +
+            "-" + str(epoch) + ".ckpt"
         )
         torch.save(model, path)
 
@@ -351,10 +366,10 @@ class Config(object):
         torch.save(best_model, path)
 
     def train_one_step(self):
-        self.trainModel.batch_h = to_var(self.batch_h)
-        self.trainModel.batch_t = to_var(self.batch_t)
-        self.trainModel.batch_r = to_var(self.batch_r)
-        self.trainModel.batch_y = to_var(self.batch_y)
+        self.trainModel.batch_h = to_var(self.batch_h, self.use_gpu)
+        self.trainModel.batch_t = to_var(self.batch_t, self.use_gpu)
+        self.trainModel.batch_r = to_var(self.batch_r, self.use_gpu)
+        self.trainModel.batch_y = to_var(self.batch_y, self.use_gpu)
         self.optimizer.zero_grad()
         loss = self.trainModel()
         loss.backward()
@@ -362,9 +377,9 @@ class Config(object):
         return loss.item()
 
     def test_one_step(self, model, test_h, test_t, test_r):
-        model.batch_h = to_var(test_h)
-        model.batch_t = to_var(test_t)
-        model.batch_r = to_var(test_r)
+        model.batch_h = to_var(test_h, self.use_gpu)
+        model.batch_t = to_var(test_t, self.use_gpu)
+        model.batch_r = to_var(test_r, self.use_gpu)
         return model.predict()
 
     def valid(self, model):
@@ -375,18 +390,21 @@ class Config(object):
             self.lib.getValidHeadBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
+            res = self.test_one_step(
+                model, self.valid_h, self.valid_t, self.valid_r)
 
             self.lib.validHead(res.__array_interface__["data"][0])
 
             self.lib.getValidTailBatch(
                 self.valid_h_addr, self.valid_t_addr, self.valid_r_addr
             )
-            res = self.test_one_step(model, self.valid_h, self.valid_t, self.valid_r)
+            res = self.test_one_step(
+                model, self.valid_h, self.valid_t, self.valid_r)
             self.lib.validTail(res.__array_interface__["data"][0])
         return self.lib.getValidHit10()
 
     def train(self):
+        # sampled_triples = load_samples(self.in_path)
         if not os.path.exists(self.checkpoint_dir):
             os.mkdir(self.checkpoint_dir)
         best_epoch = 0
@@ -397,6 +415,11 @@ class Config(object):
             res = 0.0
             for batch in range(self.nbatches):
                 self.sampling()
+
+                # if epoch>0 and epoch% 1000 == 0:
+                #     self.batch_t = samples(self.batch_h, self.batch_t, self.batch_r, self.batch_y, sampled_triples)
+                #     self.batch_t_addr = self.batch_t.__array_interface__["data"][0]
+
                 loss = self.train_one_step()
                 res += loss
             print("Epoch %d | loss: %f" % (epoch, res))
@@ -410,7 +433,8 @@ class Config(object):
                     best_hit10 = hit10
                     best_epoch = epoch
                     best_model = copy.deepcopy(self.trainModel.state_dict())
-                    print("Best model | hit@10 of valid set is %f" % (best_hit10))
+                    print("Best model | hit@10 of valid set is %f" %
+                          (best_hit10))
                     bad_counts = 0
                 else:
                     print(
@@ -425,7 +449,8 @@ class Config(object):
             best_model = self.trainModel.state_dict()
             best_epoch = self.train_times - 1
             best_hit10 = self.valid(self.trainModel)
-        print("Best epoch is %d | hit@10 of valid set is %f" % (best_epoch, best_hit10))
+        print("Best epoch is %d | hit@10 of valid set is %f" %
+              (best_epoch, best_hit10))
         print("Store checkpoint of best result at epoch %d..." % (best_epoch))
         if not os.path.isdir(self.result_dir):
             os.mkdir(self.result_dir)
@@ -443,13 +468,15 @@ class Config(object):
         for i in range(self.testTotal):
             sys.stdout.write("%d\r" % (i))
             sys.stdout.flush()
-            self.lib.getHeadBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
+            self.lib.getHeadBatch(
+                self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
                 self.testModel, self.test_h, self.test_t, self.test_r
             )
             self.lib.testHead(res.__array_interface__["data"][0])
 
-            self.lib.getTailBatch(self.test_h_addr, self.test_t_addr, self.test_r_addr)
+            self.lib.getTailBatch(
+                self.test_h_addr, self.test_t_addr, self.test_r_addr)
             res = self.test_one_step(
                 self.testModel, self.test_h, self.test_t, self.test_r
             )
