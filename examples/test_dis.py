@@ -2,7 +2,7 @@ import config
 from models import *
 import json
 import os 
-os.environ['CUDA_VISIBLE_DEVICES']='1'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 con = config.Config()
 #Input training files from benchmarks/FB15K/ folder.
 con.set_in_path("./benchmarks/Dis-YAGO39K1/")

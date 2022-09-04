@@ -50,7 +50,7 @@ python3 train_dis.py
 
 # **Datasets**
 
-In our experiments, we use YAGO39K and Ontology FMA.
+In our experiments, we use YAGO39K[1], Ontology FMA[2], FoodOn[3] and HeLiS[4].
 
 Datasets are required in the folder benchmarks/ in the following format, containing five files:
 
@@ -65,6 +65,14 @@ Datasets are required in the folder benchmarks/ in the following format, contain
 * relation2id.txt: all relations and corresponding ids, one per line.
 
 You have to run "n-n.py" to finish data preprocessing
+
+[1]Lv, X.; Hou, L.; Li, J.; Liu, Z. Differentiating Concepts and Instances for Knowledge Graph Embedding. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, Brussels, Belgium, 31 October-4 November 2018; pp. 1971–1979.
+
+[2]Noy, N. F.; Musen, M. A.; Mejino Jr, J. L.; Rosse, C. Pushing the envelope: challenges in a frame-based representation of human anatomy. Data Knowl. Eng., 2004, 48(3), 335–359. 
+
+[3]Dooley, D. M.; Griffiths, E. J.; Gosal, G. S.; Buttigieg, P. L.; Hoehndorf, R.; Lange, M. C.; Schriml L. M.; Brinkman F. S.; Hsiao, W. W. FoodOn: a harmonized food ontology to increase global food traceability, quality control and data integration. Science of Food, 2018, 2(1), 1–10. 
+
+[4]Dragoni, M.; Bailoni, T.; Maimone, R.; Eccher, C. HeLiS: An Ontology for Supporting Healthy Lifestyles. In Proceedings of the 17th International Semantic Web Conference, Monterey, Monterey, California, USA, 8-12 October 2018; pp. 53–69.
 
 <!-- # **Citation**
 

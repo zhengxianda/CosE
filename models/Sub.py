@@ -21,14 +21,11 @@ class Sub(Model):
         self.init_weights()
 
     def init_weights(self):
-        # if self.config.pretrain_model == None:
-        #     raise Exception("[ERROR] Pretrain model doesn't exist!")
         nn.init.xavier_uniform(self.ent_embeddings.weight.data)
         nn.init.xavier_uniform(self.rel_embeddings.weight.data)
         nn.init.xavier_uniform(self.ent_transfer.weight.data)
         nn.init.xavier_uniform(self.mn_embeddings.weight.data)
         nn.init.xavier_uniform(self.ht_embeddings.weight.data)
-        # self.ht_embeddings.weight.data = self.config.pretrain_model['ent_embeddings.weight']
         nn.init.xavier_uniform(self.ht_transfer.weight.data)
 
     def _transfer(self, e, e_transfer, e2_transfer):
@@ -46,10 +43,6 @@ class Sub(Model):
     def forward(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        # h_transfer = self.ent_transfer(self.batch_h)
-        # t_transfer = self.ent_transfer(self.batch_t)
-        # h = self._transfer(h, h_transfer, t_transfer)
-        # t = self._transfer(t, t_transfer, h_transfer)
         m = self.mn_embeddings(self.batch_h)
         n = self.mn_embeddings(self.batch_t)
         h1 = self.ht_embeddings(self.batch_h)
@@ -67,10 +60,6 @@ class Sub(Model):
     def predict(self):
         h = self.ent_embeddings(self.batch_h)
         t = self.ent_embeddings(self.batch_t)
-        # h_transfer = self.ent_transfer(self.batch_h)
-        # t_transfer = self.ent_transfer(self.batch_t)
-        # h = self._transfer(h, h_transfer, t_transfer)
-        # t = self._transfer(t, t_transfer, h_transfer)
         m = self.mn_embeddings(self.batch_h)
         n = self.mn_embeddings(self.batch_t)
         h1 = self.ht_embeddings(self.batch_h)
