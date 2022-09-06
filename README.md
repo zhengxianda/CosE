@@ -3,7 +3,7 @@ Source code and datasets of paper "Cosine-based Embedding for Completing LightWe
 
 The structure of the model is shown in the figure, as follow:
 
-![picture](https://github.com/zhengxianda/CosE/raw/master/img/framework.png)
+![picture](https://github.com/zhengxianda/CosE/raw/master/img/framework.jpg)
 
 
 # **Code**
